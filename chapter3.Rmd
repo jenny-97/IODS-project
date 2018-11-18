@@ -2,7 +2,7 @@
 title: "chapter3.Rmd"
 output: html_document
 ---
-
+ 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -21,14 +21,21 @@ alc <- mutate(alc1, alc_use = (Dalc + Walc) / 2)
 alc <- mutate(alc1, high_use = alc_use > 2)
 g1 <- ggplot(data = alc1, aes(x = high_use))
 g1 + geom_bar() + facet_wrap("sex") + ggtitle("sex and alcohol consumption")
-# As i thought in my hypothesis, males have a higher alcohol consumption than females. A higher ratio of the men also have a high alcohol consumption.
+```
+As i thought in my hypothesis, males have a higher alcohol consumption than females. A higher ratio of the men also have a high alcohol consumption.
+```{r}
 g1 + geom_bar() + facet_wrap("age") + ggtitle("Age and alcohol consumption")
-#The data seems to be based mostly from students aged 15-18. It is therefore quite hard to tell if my hypothesis is right or not. Roughly half of the students aged 17 and 18 seems to be high alcohol consumers.
+```
+The data seems to be based mostly from students aged 15-18. It is therefore quite hard to tell if my hypothesis is right or not. Roughly half of the students aged 17 and 18 seems to be high alcohol consumers.
+```{r}
 g1 + geom_bar() + facet_wrap("failures") + ggtitle("failures and alcohol consumption")
-#most of the students doesn't seem to fail their classes at all. Of those that do fail, roughly half are also high alcohol consumers. My hypothesis was therefore almost correct. not that many fail at all but of those who do, half drink much.
+```
+most of the students doesn't seem to fail their classes at all. Of those that do fail, roughly half are also high alcohol consumers. My hypothesis was therefore almost correct. not that many fail at all but of those who do, half drink much.
+```{r}
 g1 + geom_bar() + facet_wrap("G3") + ggtitle("Grades and alcohol consumption")
-#As i thought in my hypothesis, most of the people who have a grade of >15 doesn't consume much alcohol. the plot is a bit misleading, since it seems like most of the students don't drink much at all. Furthermore it is interesting to see that more than 3/4 of the students with the grade 0 doesnt drink much.
-
+```
+As i thought in my hypothesis, most of the people who have a grade of >15 doesn't consume much alcohol. the plot is a bit misleading, since it seems like most of the students don't drink much at all. Furthermore it is interesting to see that more than 3/4 of the students with the grade 0 doesnt drink much.
+```{r}
 g2 <- ggplot(alc1, aes(x = high_use, y = age, col = sex))
 g2 + geom_boxplot()
 g3 <- ggplot(alc1, aes(x = high_use, y = failures, col = sex))
@@ -37,26 +44,32 @@ g4 <- ggplot(alc1, aes(x = high_use, y = G3, col = sex))
 g4 + geom_boxplot()
 g5 <- ggplot(alc1, aes(x = high_use, y = sex))
 g5 + geom_boxplot()
-
-#Exploring the relationship between the chosen variables (sex,age,failures and G3) and high alcohol consumption
-
+```
+Exploring the relationship between the chosen variables (sex,age,failures and G3) and high alcohol consumption
+```{r}
 m <- glm(high_use ~ failures + age + sex + G3, data = alc1, family = "binomial")
 summary(m)
-#based on the P-value I made the following conclusions: SexM has a P-value of 0.0003, and is therefore highly likely related to high alcohol consumption. Failures (P=0.022) is likely to have a relation with hihg alcohol consumption, due to it's realtively low P-value. Age might be related to high alcohol consumption, but since the P-value isn't that low it might be misleading. Grades do based on this, most likely not have a relation to high alcohol consumption. As i guessed in my hypothesis sex does matter, and males are more likely to consume more alcohol, failures have a realtion to high alcohol consumption as I guessed and age doesn't matter as much asI guessed.
+```
+based on the P-value I made the following conclusions: SexM has a P-value of 0.0003, and is therefore highly likely related to high alcohol consumption. Failures (P=0.022) is likely to have a relation with hihg alcohol consumption, due to it's realtively low P-value. Age might be related to high alcohol consumption, but since the P-value isn't that low it might be misleading. Grades do based on this, most likely not have a relation to high alcohol consumption. As i guessed in my hypothesis sex does matter, and males are more likely to consume more alcohol, failures have a realtion to high alcohol consumption as I guessed and age doesn't matter as much asI guessed.
 
-#calculation odds ratios and confidence intervals
+calculation odds ratios and confidence intervals
+```{r}
 OR <- coef(m) %>% exp
 CI <- confint(m) %>% exp
 cbind(OR, CI)
-#The odds ratio describes the same things as the summary's p-value described, i.e. that sex has a high correlation with high alcohol usage, failures has a correlation (not as strong), age might have a correlation with alcohol consumption, although this is uncertain and that grades does not correlatewith high alcohol consumption. I can tell this by looking at the odds ratio and the confidence interval. The higher they are, the more likely there is a relation between the two factors.If the OR is >1 there is likely a relation between the factors. According to this grades might have a correlation, but it's lower than the rest so I concluded that it doesn't affect much.
+```
+The odds ratio describes the same things as the summary's p-value described, i.e. that sex has a high correlation with high alcohol usage, failures has a correlation (not as strong), age might have a correlation with alcohol consumption, although this is uncertain and that grades does not correlatewith high alcohol consumption. I can tell this by looking at the odds ratio and the confidence interval. The higher they are, the more likely there is a relation between the two factors.If the OR is >1 there is likely a relation between the factors. According to this grades might have a correlation, but it's lower than the rest so I concluded that it doesn't affect much.
 
-#exploring the predicting powers of my model
+exploring the predicting powers of my model
+```{r}
 m <- glm(high_use ~ failures + age + sex + G3, data = alc1, family = "binomial")
 probabilities <- predict(m, type = "response") 
 alc1 <- mutate(alc1, probability = probabilities)
 alc1 <- mutate(alc1, prediction = probability > 0.5)
 table(high_use = alc1$high_use, prediction = alc1$prediction)
-#the cross tabulation describes how many of the predications were right, and how many were wrong. In the top left corner are true negatives (predicted as not high alcohol consumers and ther weren't), in the bottom right corner is true positives (predicted as trueand they were true), in the top right is false positives (predicted as true but were false) and in the bottom left is false negatives (predicted as false but were true). From the tabulation you can see that 98 predictions were false negatives, that is almost 26% of the people in the data. Only about 3% were predicted as false positives, which is not too bad. In general the predictions are not that good, which are seen from these numbers and from the training error seen below.
+```
+the cross tabulation describes how many of the predications were right, and how many were wrong. In the top left corner are true negatives (predicted as not high alcohol consumers and ther weren't), in the bottom right corner is true positives (predicted as trueand they were true), in the top right is false positives (predicted as true but were false) and in the bottom left is false negatives (predicted as false but were true). From the tabulation you can see that 98 predictions were false negatives, that is almost 26% of the people in the data. Only about 3% were predicted as false positives, which is not too bad. In general the predictions are not that good, which are seen from these numbers and from the training error seen below. 
+```{r}
 loss_func <- function(class, prob) {
   n_wrong <- abs(class - prob) > 0.5
   mean(n_wrong)
