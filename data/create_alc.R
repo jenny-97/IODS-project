@@ -62,5 +62,4 @@ alc <- mutate(alc, high_use = alc_use > 2)
 glimpse(alc)
 
 #saving the data
-write.table(alc)
- 
+write.table(alc) 
