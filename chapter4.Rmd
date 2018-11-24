@@ -78,4 +78,12 @@ table(correct = correct_classes, predicted = lda.pred$class)
 pred <- lda.pred$class
 
 ``` 
-According to the cross tabulation, there were no false predictions in the high crime predictions. There we're a few (5) mispredictions in the med_high column, a few more mispredictions in the med_low column and some mispredictions in the low crime column. 
+According to the cross tabulation, there were no false predictions in the high crime predictions. There we're a few (5) mispredictions in the med_high column, a few more mispredictions in the med_low column and some mispredictions in the low crime column.  
+
+```{r}
+library(MASS)
+data('Boston')
+boston_scaled1 <- scale(Boston)
+dist_eu <- dist(boston_scaled1)
+km <- kmeans(boston_scaled1, centers = 3)
+pairs(boston_scaled1, col = km$cluster)
