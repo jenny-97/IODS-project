@@ -30,4 +30,52 @@ boston_scaled <- scale(Boston)
 summary(boston_scaled)
 boston_scaled <- as.data.frame(boston_scaled)
 ```
-After scaling the dataset, the values become much lower. Many of the minimum values even become negative. 
+After scaling the dataset, the values become much lower. Many of the minimum values even become negative. This makes it possible to compare the results later, since it would be hard to compare variables with widely different scales.
+```{r}
+bins <- quantile(boston_scaled$crim)
+vector <- c("low", "med_low", "med_high", "high")
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE,label = vector)
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+boston_scaled <- data.frame(boston_scaled, crime)
+n <- nrow(boston_scaled)
+
+# choose randomly 80% of the rows
+ind <- sample(n,  size = n * 0.8)
+
+# create train set
+train <- boston_scaled[ind,]
+
+# create test set 
+test <- boston_scaled[-ind,]
+
+#fitting the lda on the train set
+lda.fit <- lda(formula = crime ~. , data = train)
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "purple", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+classes <- as.numeric(train$crime)
+plot(lda.fit, dimen = 2, col =classes, pch=classes)
+lda.arrows(lda.fit, myscale = 4)
+```
+the LDA shows the relationship between the different variables and crime in Boston. It shows how different things seem to be connected to crime levels. The same things can be read from the corrplot earlier by comparing different variables with the crime variable. The arrow going out of the picture is the "rad" arrow.
+```{r}
+# save the correct classes from test data
+
+correct_classes <- test$crime
+
+# remove the crime variable from test data
+test <- dplyr::select(test, -crime)
+# predict classes with test data
+lda.pred <- predict(lda.fit, newdata = test)
+
+# cross tabulate the results
+table(correct = correct_classes, predicted = lda.pred$class)
+pred <- lda.pred$class
+
+``` 
+According to the cross tabulation, there were no false predictions in the high crime predictions. There we're a few (5) mispredictions in the med_high column, a few more mispredictions in the med_low column and some mispredictions in the low crime column. 
