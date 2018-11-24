@@ -1,0 +1,33 @@
+---
+title: "chapter4.Rmd"
+output: html_document
+---
+
+```{r}
+# access the MASS package
+library(MASS)
+
+# load the data
+data("Boston")
+
+
+str(Boston)
+dim(Boston)
+```
+The Boston dataset describes the prices of houses in different parts of Boston. It does also give data about other things related to the housing, such as crime, age distribution among the house owners and areas of non-retail busísness in Boston. there are 14 variables in total, and 506 observations.
+
+```{r}
+library("corrplot")
+pairs(Boston)
+summary(Boston) 
+cor_matrix<-cor(Boston)
+corrplot(cor_matrix, method = "circle")
+```
+The corrplot gives an overview of the correlations between the variables. For example, there seems to be a fairly strong positive correlation between taxes and distance to radial highways. A positive correlation indicates that when one variable increases the other does as well. Furthermore there seems to be a pretty strong negative correlation between nitrogen oxides concentration and distance to Boston employment centres. This means that the nitrogen oxides concentrations decrease as the distance from the employment centres increase. The blue circles means positive correlations and the read means negative correlation. The bigger the circle is, the stronger the correlations is.
+
+```{r}
+boston_scaled <- scale(Boston)
+summary(boston_scaled)
+boston_scaled <- as.data.frame(boston_scaled)
+```
+After scaling the dataset, the values become much lower. Many of the minimum values even become negative. 
