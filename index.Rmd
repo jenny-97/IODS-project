@@ -33,5 +33,5 @@ Chapter 3 begins here
   
 ```{r child = "chapter4.Rmd"}
 ```
- 
+  
 ***
