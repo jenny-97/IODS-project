@@ -14,7 +14,7 @@ data("Boston")
 str(Boston)
 dim(Boston)
 ```
-The Boston dataset describes the prices of houses in different parts of Boston. It does also give data about other things related to the housing, such as crime, age distribution among the house owners and areas of non-retail busísness in Boston. there are 14 variables in total, and 506 observations.
+The Boston dataset describes the prices of houses in different parts of Boston. It does also give data about other things related to the housing, such as crime, age distribution among the house owners and areas of non-retail business in Boston. there are 14 variables in total, and 506 observations.
 
 ```{r}
 library("corrplot")
