@@ -85,5 +85,7 @@ library(MASS)
 data('Boston')
 boston_scaled1 <- scale(Boston)
 dist_eu <- dist(boston_scaled1)
-km <- kmeans(boston_scaled1, centers = 3)
+km <- kmeans(boston_scaled1, centers = 2)
 pairs(boston_scaled1, col = km$cluster) 
+```
+The clusters show that some of the variables relate positively to wealthy areas in Boston, for example more rooms per dwelling and lower student teacher ratios. they also show that there are other variables that relate to the poorer areas. Such variables are higher crime rate, older homes, higher nitrogen oxid levels.
