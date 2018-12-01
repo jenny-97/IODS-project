@@ -1,5 +1,7 @@
 #creating a new file even though I did the data wrangling.. It's easier to work if the variables are the same as in datacamp and the instructions
-#Jenny Österlund, http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv, http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/gender_inequality.csv
+#Jenny Österlund
+#original files: http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv, http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/gender_inequality.csv
+#1.12.2018
 human <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human1.txt", sep = ",", header = TRUE)
 str(human)
 dim(human)
