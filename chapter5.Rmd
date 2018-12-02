@@ -16,8 +16,20 @@ The summary shows the distribution of the variables. One can interpret the mean 
 ```{r}
 ggpairs(human)
 corrplot(cor(human), method = "circle", type = "upper")
-````
-The ggåairs plot show a graphical overview of the data. Among other things it shows the correlation (relationship) between different variables. The corrplot also shows the correlation between the variables. Blue colour indicates a positive correlation and red colour indicates a negative correlation. The bigger and darker the circles are, the stronger the correlation is.
+```
+The ggpairs plot show a graphical overview of the data. Among other things it shows the correlation (relationship) between different variables. The corrplot also shows the correlation between the variables. Blue colour indicates a positive correlation and red colour indicates a negative correlation. The bigger and darker the circles are, the stronger the correlation is.
 For example the stringest correlations seem to be between maternity mortality and life expectation. This can be seen from both the corrplot (big dark circle) and the ggpairs (hightst value). The red colour indicates a negative correlation and as does the minus sign.
 
-PCA on the not standardized human data 
+perfroming a PCA on the human data, as well as drawing a biplot to display the observations of the first two principal components
+```{r}
+pca_human <- prcomp(human)
+pca_human
+summary(pca_human)
+biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
+```
+
+```{r}
+human_std <- scale(human)
+pca_human <- prcomp(human_std)
+biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
+```
