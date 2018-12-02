@@ -6,7 +6,6 @@ Exploring the data
 ```{r}
 human <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human2.txt", sep = ",", header = TRUE)
 library(tidyverse)
-install.packages("GGally")
 library(GGally)
 library(corrplot)
 summary(human)
@@ -21,17 +20,26 @@ The ggpairs plot show a graphical overview of the data. Among other things it sh
 For example the stringest correlations seem to be between maternity mortality and life expectation. This can be seen from both the corrplot (big dark circle) and the ggpairs (hightst value). The red colour indicates a negative correlation and as does the minus sign.
 
 perfroming a PCA on the human data, as well as drawing a biplot to display the observations of the first two principal components
+  PCA is a way to decompose a data matrix into smaller matrices. This allows us to extract the underlying principal components. There are two dofferent kinds of PCA; the Eigenvalue decomposition and the Singular value decomposition. We will be using the latter (SVD), since it's more accurate.
 ```{r}
 pca_human <- prcomp(human)
 pca_human
+```
+The pca_human code gives an overview of the data's principal components. This dataset has 8 PCs. The overview gives information about the standard deviation and the variability of the dataset. The first PC (PC1) shows the largest variance,and the 2 last ones the smallest. This can also be seen from the summary of the principal components below.
+```{r}
 summary(pca_human)
 biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
 ```
-The first non-scaled PCA doesn't really give much useful information. This can be seen quite clearly from the biplot, where you can't really make anything out. However, in the biplot the PC1 is visible on the x-axis and the PC2 is visible on the y-axis. The arrows visualize how the PCs and the values in the human data connect to each other. Furhtermore, angles between the arrows show correlation between the variables and angles between the axis and arrow show correlation between the variable and the PC. For example small angles between arrows indicate high postitive correlation between variables and small angles between an arrow and a PC axis show high positive correlation between them.
+The first non-standardized PCA doesn't really give much useful information. This can be seen quite clearly from the biplot, where you can't really make anything out. However, in the biplot the PC1 is visible on the x-axis and the PC2 is visible on the y-axis. The arrows visualize how the PCs and the values in the human data connect to each other. Furhtermore, angles between the arrows show correlation between the variables and angles between the axis and arrow show correlation between the variable and the PC. For example small angles between arrows indicate high postitive correlation between variables and small angles between an arrow and a PC axis show high positive correlation between them.
 ```{r}
 human_std <- scale(human)
-human_std
+```
+
+```{r}
 summary(human_std)
 pca_human <- prcomp(human_std)
+pca_human
 biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
 ```
+The biplot of the standardized dataset is much clearer and easier to interpret than the biplot of the original dataset. Also, the results differ from each other as can be seen from the biplots. When we standardize a dataset, we scale it down, so that the values don't have as much variance between each other. This is useful in PCA, since it assumes that variables with large variances are more important than other, which can be misleading in the results. The variables also assume values that are easier to compare.This is the reason to why the results are different.
+  The correlations haven't, however, changed. the arros are seen more clearly in the standardized biplot, but the relations between them are the same. This happens because the standard deviation changes, which can be seen from the summaries of the original and then standardized datasets.
