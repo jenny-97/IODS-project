@@ -27,9 +27,11 @@ pca_human
 summary(pca_human)
 biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
 ```
-
+The first non-scaled PCA doesn't really give much useful information. This can be seen quite clearly from the biplot, where you can't really make anything out. However, in the biplot the PC1 is visible on the x-axis and the PC2 is visible on the y-axis. The arrows visualize how the PCs and the values in the human data connect to each other. Furhtermore, angles between the arrows show correlation between the variables and angles between the axis and arrow show correlation between the variable and the PC. For example small angles between arrows indicate high postitive correlation between variables and small angles between an arrow and a PC axis show high positive correlation between them.
 ```{r}
 human_std <- scale(human)
+human_std
+summary(human_std)
 pca_human <- prcomp(human_std)
 biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
 ```
