@@ -28,18 +28,29 @@ pca_human
 The pca_human code gives an overview of the data's principal components. This dataset has 8 PCs. The overview gives information about the standard deviation and the variability of the dataset. The first PC (PC1) shows the largest variance,and the 2 last ones the smallest. This can also be seen from the summary of the principal components below.
 ```{r}
 summary(pca_human)
-biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
+pca_pr <- round(100*summary(pca_human)$importance[2,], digits = 1)
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"), xlab =pc_lab[1], ylab = pc_lab[2])
 ```
-The first non-standardized PCA doesn't really give much useful information. This can be seen quite clearly from the biplot, where you can't really make anything out. However, in the biplot the PC1 is visible on the x-axis and the PC2 is visible on the y-axis. The arrows visualize how the PCs and the values in the human data connect to each other. Furhtermore, angles between the arrows show correlation between the variables and angles between the axis and arrow show correlation between the variable and the PC. For example small angles between arrows indicate high postitive correlation between variables and small angles between an arrow and a PC axis show high positive correlation between them.
+The first non-standardized PCA doesn't really give much useful information. This can be seen quite clearly from the biplot, where you can't really make anything out. Also, the PC1 contains 100% of the variance according to this model, which is not useful information. However, in the biplot the PC1 is visible on the x-axis and the PC2 is visible on the y-axis. The arrows visualize how the PCs and the values in the human data connect to each other. Furhtermore, angles between the arrows show correlation between the variables and angles between the axis and arrow show correlation between the variable and the PC. For example small angles between arrows indicate high postitive correlation between variables and small angles between an arrow and a PC axis show high positive correlation between them.
 ```{r}
 human_std <- scale(human)
 ```
 
 ```{r}
 summary(human_std)
-pca_human <- prcomp(human_std)
-pca_human
-biplot(pca_human, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"))
+pca_human_std <- prcomp(human_std)
+pca_human_std
+pca_pr_std <- round(100*summary(pca_human_std)$importance[2,], digits = 1)
+pc_lab <- paste0(names(pca_pr_std), " (", pca_pr_std, "%)")
+biplot(pca_human_std, choices = 1:2, cex =c(0.6, 0.8), col = c("red", "blue"),xlab =pc_lab[1], ylab = pc_lab[2])
 ```
-The biplot of the standardized dataset is much clearer and easier to interpret than the biplot of the original dataset. Also, the results differ from each other as can be seen from the biplots. When we standardize a dataset, we scale it down, so that the values don't have as much variance between each other. This is useful in PCA, since it assumes that variables with large variances are more important than other, which can be misleading in the results. The variables also assume values that are easier to compare.This is the reason to why the results are different.
+The biplot of the standardized dataset is much clearer and easier to interpret than the biplot of the original dataset. Also, the results differ from each other as can be seen from the biplots. Now PC1 accounts for 53.6% and PC2for 16.2% of the variance. When we standardize a dataset, we scale it down, so that the values don't have as much variance between each other. This is useful in PCA, since it assumes that variables with large variances are more important than other, which can be misleading in the results. The variables also assume values that are easier to compare.This is the reason to why the results are different.
   The correlations haven't, however, changed. the arros are seen more clearly in the standardized biplot, but the relations between them are the same. This happens because the standard deviation changes, which can be seen from the summaries of the original and then standardized datasets.
+
+
+Interpreting hte results
+The standardized biplot is still a bit hard to interpret, it would be much easier if it was a bit bigger, but unfortunately I don't know how to make it bigger yet. 
+  According to the standardized biplot PC1 correlates to variables connected to health, such as life.exp, mat.mot, edu.exp and ado.birth. PC2 correlates with variables connected to equality, such as parli.F and labo.FM. 
+  3 different clusters can be seen from the standardized biplot. Two of them are almost on top of each other, but one is slightly below the other. Another one is above the other two. The different places of the clusters depend on how much they are affected by variables that correlate with PC1 and PC2. It would be interesting to see which countries are in which cluster, but I can't quite make out the text, other than some african countries in the top right. Thismeans that the correlate positively with mat.mor and ado.birth and also somewhat with labo.FM.
+  How the arrows are arranged in the biplot depends on how the variables correlate with PC1, PC2 and each other. As earlier explained, small angles mean that the correlation is highly positive and largeangles (for example 180 degrees) indicate a highly negative correlation. The arrows (variables) show both correlation between the different variables and PC1 and PC2.
