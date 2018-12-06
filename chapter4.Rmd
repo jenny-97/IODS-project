@@ -2,6 +2,7 @@
 title: "chapter4.Rmd"
 output: html_document
 ---
+# Chapter 4 begins here  {#anchor} 
 
 ```{r}
 # access the MASS package

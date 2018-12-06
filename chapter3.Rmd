@@ -2,7 +2,7 @@
 title: "chapter3.Rmd"
 output: html_document
 ---
- 
+# Chapter 3 begins here  {#anchor} 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 

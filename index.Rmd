@@ -23,25 +23,21 @@ output:
 ```
  
 ***
-Chapter 3 begins here 
   
 ```{r child = "chapter3.Rmd"}
 ```
 
-***
-Chapter 4 begins here 
+*** 
   
 ```{r child = "chapter4.Rmd"}
 ```
   
 ***
-Chapter 5 begins here 
   
 ```{r child = "chapter5.Rmd"}
 ```
   
 ***
-Chapter 6 begins here 
   
 ```{r child = "chapter6.Rmd"}
 ```

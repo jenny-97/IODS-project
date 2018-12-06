@@ -1,7 +1,11 @@
 ---
 title: "chapter6.Rmd"
 output: html_document
+theme: cerulean
 ---
+ 
+# Chapter 6 begins here  {#anchor} 
+
 This week we are learning about longitudinal data. Longitudinal data is the name of data where multiple measurements is done at different times on the same subject. That way, we get multiple responses for each variable. The different measurements are intercorrelated,and the different variables measured can also be correlated to each oter. Hence,we can have two different types of dependecies in the data.
 ```{r}
 BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
@@ -38,9 +42,68 @@ names(BPRSL)
 str(BPRSL)
 summary(BPRSL)
 ```
-I will be using the dataint the long form, i.e. RATSL and BPRSL
+I will be using the data in the long form, i.e. RATSL and BPRSL
 
-```{.css_class} 
-Graphical diplays
-``` 
+### Part 2: RATS {.css_class} 
 
+###### graphical display 
+In the first part of the analysis, I willbe using the RATS data set.
+To begin the analysis, I will create a plot of the individual response profiles in RATS. In the first plot the data is non-standardize, and in the second plot the data is standardized.
+```{r}
+#Access the package ggplot2
+library(ggplot2)
+
+# Draw the plot of RATSL
+ggplot(RATSL, aes(x = Time, y = Weight, linetype = as.factor(ID))) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  theme(legend.position = "none") + 
+  scale_y_continuous(limits = c(min(RATSL$Weight), max(RATSL$Weight)))
+```
+From the plot, which is made from the non-standardized data on the rats and their wegihts, we can see that there are wegiht differences between the rats. The rats in Group 1 started off at the smallest weight (225-275g), while those in Gruoup two and three were a bit heavier (400-550g).The rats' weight in Group one did not change much during the experiment. Some rats in Group two gained almost 100g, and all rats in Group two gained at least a bit weight (~25g at a minimum). The rats in Group 3 also gained weight, but their weight curves is more uneven than those in Group one and two. I think it would be better to mix the rats, so that the weight distribution between the groups would be more even, since the rats at different weights might have different eating habits, which could affect the results.
+
+Next the data is standardized, and then the same plot is drawn again.
+```{r}
+# Standardise the variable Weight
+RATSLS <- RATSL %>%
+  group_by(Time) %>%
+  mutate(stdWeight = (Weight-mean(Weight))/sd(Weight)) %>%
+  ungroup()
+
+# Plot with standardized values
+ggplot(RATSLS, aes(x = Time, y = stdWeight, linetype = as.factor(ID))) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(name = "standardized weight")
+```
+The standardized plot differs from the non-standardized plot. The subjects with the highest values in the beginning tend to have higher values throughtout the study. This is called tracking, and it can be more clearly visualized by standardized plots. 
+    The rats' weight-curves in Group two is more even, and one rat(number7) seems to even have lost weight, even though it looked like it had gained a little weight in the non-standardized plot! Almost all rats seem to have lost weight in the third group, except for one rat.The rat that didn't lose weight did not gain wegiht etiher, and it was the one with the lowest initial weight, which could affect the results.
+    
+    
+When dealing with large amounts of data, plots of individual response gets messy and unclear, and is thereforeof little use. A better way of showing progress is to calculate mean profiles for the different groups throughout the study, and then compare them with each other in summary graphs. The standard error of mean can be used to indicate the variation of the observations at different time points.
+```{r}
+# Time 
+n <- RATSL$Time %>% unique() %>% length()
+
+# Summary data with mean and standard error of weight by group and time 
+RATSS <- RATSL %>%
+  group_by(Group, Time) %>%
+  summarise( mean = mean(Weight), se = sd(Weight)/sqrt(n)) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSS)
+
+# Plot the mean profiles
+ggplot(RATSS, aes(x = Time, y = mean, linetype = as.factor(Group), shape = as.factor(Group))) +
+  geom_line() +
+  scale_linetype_manual(values = c(1,2,3)) +
+  geom_point(size=3) +
+  scale_shape_manual(values = c(1,2,3)) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se, linetype="1"), width=0.3) +
+  theme(legend.position = c(0.8,0.8)) +
+  scale_y_continuous(name = "mean(Weight) +/- se(Weight)")
+```
+The standard error is an estimate of the standard deviation. If the standrad erroris big in a group, then the variation is big in that group. This summary plot is quite clear, and it shows that on average the rats in all groups got fatter from the diets. The second group has the highest standard error, and the first group has the lowest standard error. The third group has the highest values (weight) while the first group has the lowestvalues (weight).
