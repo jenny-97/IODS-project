@@ -41,3 +41,9 @@ Chapter 5 begins here
 ```
   
 ***
+Chapter 6 begins here 
+  
+```{r child = "chapter6.Rmd"}
+```
+  
+***

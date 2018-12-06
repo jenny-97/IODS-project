@@ -1,0 +1,46 @@
+---
+title: "chapter6.Rmd"
+output: html_document
+---
+This week we are learning about longitudinal data. Longitudinal data is the name of data where multiple measurements is done at different times on the same subject. That way, we get multiple responses for each variable. The different measurements are intercorrelated,and the different variables measured can also be correlated to each oter. Hence,we can have two different types of dependecies in the data.
+```{r}
+BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
+RATS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt", header = TRUE, sep = '\t')
+
+# Access the packages dplyr and tidyr
+library(dplyr)
+library(tidyr)
+
+# Factor ID and Group
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+
+# Convert to long form and extract day numbers from WD
+RATSL <- RATS %>% gather(key = WD, value = Weight, -ID, -Group) %>% mutate(Time = as.integer(substr(WD, 3,4))) 
+
+# Factor treatment & subject
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+
+# Convert to long form
+BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
+
+# Extract the week number
+BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
+```
+The first data used this week is the RATS data. It consists of observations of rats' weights and weight-changes during a nine week period. The rats are separated into three different groups, and each group is put on different diets.
+In the second data, the BPRS, 40 males have been assigned to two different treatments. 18 symptoms, such as hostility, hallucinations, grandiosity and suspiciousness are being observed in the males weeklyfor 8 weeks. The observations are based on a brief psychiatric rating score (BPRS), which gives each symptom a score from 0 (not present) to seven (extremely severe). This scale helps to evaluate whether a patient suffers from schizofrenia or not.
+```{r}
+names(RATSL)
+str(RATSL)
+summary(RATSL)
+names(BPRSL)
+str(BPRSL)
+summary(BPRSL)
+```
+I will be using the dataint the long form, i.e. RATSL and BPRSL
+
+```{.css_class} 
+Graphical diplays
+``` 
+

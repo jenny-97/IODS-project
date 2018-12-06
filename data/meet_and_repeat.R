@@ -47,3 +47,5 @@ summary(RATSL)
 glimpse(RATSL)
 
 #The major difference I noticed between wide and long data is that in wide data form the responses from one subject ispresented in one row, and each response has a separate column.In the long form, each row represents one response-time per subject. Each row has data from all the subjects. Therefore, only one column per variable (such as WD)is needed.
+write.csv(RATSL, file = "RATS.csv", row.names = TRUE)
+write.csv(BPRSL, file = "BPRS.csv", row.names = TRUE) 
