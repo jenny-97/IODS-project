@@ -106,4 +106,51 @@ ggplot(RATSS, aes(x = Time, y = mean, linetype = as.factor(Group), shape = as.fa
   theme(legend.position = c(0.8,0.8)) +
   scale_y_continuous(name = "mean(Weight) +/- se(Weight)")
 ```
-The standard error is an estimate of the standard deviation. If the standrad erroris big in a group, then the variation is big in that group. This summary plot is quite clear, and it shows that on average the rats in all groups got fatter from the diets. The second group has the highest standard error, and the first group has the lowest standard error. The third group has the highest values (weight) while the first group has the lowestvalues (weight).
+The standard error is an estimate of the standard deviation. If the standrad erroris big in a group, then the variation is big in that group. This summary plot is quite clear, and it shows that on average the rats in all groups got fatter from the diets. The second group has the highest standard error, and the first group has the lowest standard error. The third group has the highest values (weight) while the first group has the lowest values (weight).
+
+Next I will draw a boxplot of the mean weight of the rats during the study. First I will calculate the mean wegiht in the different groups.
+```{r}
+#creating a summary data by Group and IDwith the mean as the summary variable
+RATSLT <- RATSL %>%
+  filter(Time > 1) %>%
+  group_by(Group, ID) %>%
+  summarise( mean=mean(Weight) ) %>%
+  ungroup()
+
+#drawing a boxplot of mean vs Group
+ggplot(RATSLT, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weight), days")
+```
+The summary boxplot shows that there is one ID that is outside the box, i.e. it's much higher or lower than the rest of the rats in that group. This phenomenon is called an outlier. The outlier can alter the results of the whole group, since it affects the mean more thanthe average rat in the group. Lets try and leave out the outliers from the mean to see what difference it makes. In group 3 it is not possible to remove the outlier, since it is below the thir groups mean.
+
+```{r}
+RATSLT1 <- filter(RATSLT, mean >250, mean < 550)
+
+ggplot(RATSLT1, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weight), days")
+```
+After removing the outlie, the variance in the mean is much lower. This mean that the outlier affected the mean of the group more than the rest of the rats affect it. For example in group two where the largest change could be seen, the rest of the rats seem to be in the almost same weight, while the outlier was drastically above that weight (the outlier's weight is approximately 600g and the rest of the rats'meanweight is around 450g). Since the outlier was much heavier than rest, its weight affected the mean more. 
+
+
+Although the graphs have shown a clear difference between the groups' weights, and therefore a difference in howthediets work, it is still best to test the data. This can be done with a t-test. I will assess the difference between the groups, and calculate a confidence interval for the difference. The data without the outlier will be used, since it gives the most precise data. Since I have three groups, i will use the ANOVA to find out the differences in weight.
+```{r}
+res.aov <- aov(mean ~ Group, data = RATSLT1)
+summary(res.aov)
+```
+
+KOLLA ANALYSEN ÄNNU!!
+
+### Part 3: BPRS {.css_class}
+
+To begin part 3, I'm going to draw a plot of the data and explore its structure. In the first plot the data's longitudinal nature is ignored.
+```{r}
+dim(BPRSL)
+str(BPRSL)
+names(BPRSL)
+ggplot(BPRSL, aes(x = week, y = bprs,linetype =as.factor(subject))) +
+  geom_line() +scale_linetype_manual(values = rep(1:10, times = 4)) + facet_grid(.~treatment,labeller =label_both) + theme(legend.position = "top") + scale_y_continuous(limits = c(min(BPRSL$bprs),max(BPRSL$bprs)))
+```
