@@ -138,11 +138,17 @@ After removing the outlie, the variance in the mean is much lower. This mean tha
 
 Although the graphs have shown a clear difference between the groups' weights, and therefore a difference in howthediets work, it is still best to test the data. This can be done with a t-test. I will assess the difference between the groups, and calculate a confidence interval for the difference. The data without the outlier will be used, since it gives the most precise data. Since I have three groups, i will use the ANOVA to find out the differences in weight.
 ```{r}
-res.aov <- aov(mean ~ Group, data = RATSLT1)
-summary(res.aov)
+
+# Add the baseline from the original data as a new variable to the summary data
+RATSLT2 <- RATSLT %>%
+  mutate(baseline = RATS$WD1)
+
+# Fit the linear model with the mean as the response 
+fit <- lm(mean ~ baseline + Group, data = RATSLT2)
+anova(fit)
 ```
 
-KOLLA ANALYSEN ÄNNU!!
+The basline tells us that the significance is great. We can also conclude that the Groupvarible has 95% confidence interval, which means that thatthe diet group that the rats belong to is significant.
 
 ### Part 3: BPRS {.css_class}
 
@@ -154,3 +160,28 @@ names(BPRSL)
 ggplot(BPRSL, aes(x = week, y = bprs,linetype =as.factor(subject))) +
   geom_line() +scale_linetype_manual(values = rep(1:10, times = 4)) + facet_grid(.~treatment,labeller =label_both) + theme(legend.position = "top") + scale_y_continuous(limits = c(min(BPRSL$bprs),max(BPRSL$bprs)))
 ```
+This is a plot showing the individuals bprs scoresthroughout the study (8weeks). We can see how they change, and how the two treatment groups differ from each other. The bprs scores seem to be declining in most cases, indicating that the treatments are working. There are, however also some individuals where the scores have risen during the treatment weeks. Also, from the plot it seems like the bprs scores from the treatment 1 group is convering in the end. This is quite interesting.
+
+Next I'mgoing to fit a multiple linear regression model with bprs as response variable and week and treatment as explanatory variables
+```{r}
+# create a regression model bprs_reg
+bprs_reg <- lm(bprs ~ week + treatment, data = BPRSL)
+
+# print out a summary of the model
+summary(bprs_reg)
+```
+By using this method, we ignore that the repeated-measured structure of the data and treat it as separate independent measurements. The significance of the variableweek is noteworthy, and treatment 1 and 2 differ from each other.
+
+###### Random Intercept Model
+Now we're going to move on to more appropriate graphics and models. First we're going to fit a random intercept model for the explanatory variables week and treatment. This allows for the linear regression for each subject to differ in intercept from the other subjects.
+```{r}
+library(lme4)
+# Create a random intercept model
+bprs_ref <- lmer(bprs ~ week + treatment + (1 | subject), data = BPRSL, REML = FALSE)
+
+# Print the summary of the model
+summary(bprs_ref)
+```
+The standard deviation of the subject is 6.885,which can be seen from the summary.
+
+Next,I'm going to fit the random intercept and random slope model onthe bprs data. This allows the linearregression fits fro each individualto differ in intercept and also in slope. This way we can accountfor individual subjects' bprsscores, and also how the change happens over time.
