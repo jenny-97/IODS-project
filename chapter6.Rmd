@@ -123,11 +123,9 @@ ggplot(RATSLT, aes(x = Group, y = mean)) +
   stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
   scale_y_continuous(name = "mean(Weight), days")
 ```
-The summary boxplot shows that there is one ID that is outside the box, i.e. it's much higher or lower than the rest of the rats in that group. This phenomenon is called an outlier. The outlier can alter the results of the whole group, since it affects the mean more thanthe average rat in the group. Lets try and leave out the outliers from the mean to see what difference it makes. In group 3 it is not possible to remove the outlier, since it is below the thir groups mean.
-
+The summary boxplot shows that there is one ID that is outside the box, i.e. it's much higher or lower than the rest of the rats in that group. This phenomenon is called an outlier. The outlier can alter the results of the whole group, since it affects the mean more thanthe average rat in the group. Lets try and leave out the outliers from the mean to see what difference it makes. 
 ```{r}
-RATSLT1 <- filter(RATSLT, mean >250, mean < 550)
-
+RATSLT1 <- filter(RATSLT, (Group ==1 & mean >250) |(Group == 2 & mean < 550) | (Group == 3 & mean >500))
 ggplot(RATSLT1, aes(x = Group, y = mean)) +
   geom_boxplot() +
   stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
@@ -172,7 +170,7 @@ summary(bprs_reg)
 ```
 By using this method, we ignore that the repeated-measured structure of the data and treat it as separate independent measurements. The significance of the variableweek is noteworthy, and treatment 1 and 2 differ from each other.
 
-###### Random Intercept Model
+###### Random Intercept and Random Slope Models
 Now we're going to move on to more appropriate graphics and models. First we're going to fit a random intercept model for the explanatory variables week and treatment. This allows for the linear regression for each subject to differ in intercept from the other subjects.
 ```{r}
 library(lme4)
@@ -184,4 +182,53 @@ summary(bprs_ref)
 ```
 The standard deviation of the subject is 6.885,which can be seen from the summary.
 
-Next,I'm going to fit the random intercept and random slope model onthe bprs data. This allows the linearregression fits fro each individualto differ in intercept and also in slope. This way we can accountfor individual subjects' bprsscores, and also how the change happens over time.
+Next,I'm going to fit the random intercept and random slope model onthe bprs data. This allows the linearregression fits fro each individualto differ in intercept and also in slope. This way we can account for individual subjects' bprs scores, and also how the change happens over time.
+
+```{r}
+# create a random intercept and random slope model
+bprs_ref1 <- lmer(bprs ~ week + treatment + (week | subject), data = BPRSL, REML = FALSE)
+
+# print a summary of the model
+summary(bprs_ref1)
+
+# perform an ANOVA test on the two models
+anova(bprs_ref1,bprs_ref)
+```
+The ANOVA-test tells us that the p value of the likelihood test between intercept and slope is 0.026 and significant in 99% confidence level. The lower the value of the p-value, the better the model fits. This caseis a good fit for the model.
+
+
+For the final part I'm going to fit a random intercept and slope model on the data. This allows for a group x time interaction. I'm also going to perform a ANOVA-test on the data,to tell how well the model fits.
+```{r}
+# create a random intercept and random slope model with the interaction
+bprs_ref2 <- lmer(bprs ~ week * treatment + (week | subject), data = BPRSL, REML = FALSE)
+
+# print a summary of the model
+summary(bprs_ref2)
+
+# perform an ANOVA test on the two models
+anova(bprs_ref2, bprs_ref1)
+```
+According to the ANOVA-test,week xtreatment interaction is significant in 95% confidence level
+```{r}
+# draw the plot of BPRSL
+ggplot(BPRSL, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(linetype = treatment)) +
+  scale_linetype_manual(values =rep(1:10, times =4)) +
+  scale_y_continuous(name = "bprs", limits = c(min(BPRSL$bprs), max(BPRSL$bprs))) +facet_grid(.~treatment, labeller = label_both) +
+  theme(legend.position = "top")
+```
+```{r}
+# Create a vector of the fitted values
+Fitted <- fitted(bprs_ref2)
+
+# Create a new column fitted to BPRSL
+BPRSL <- BPRSL %>% mutate(Fitted)
+
+
+# draw the plot of BPRSL with the Fitted values
+ggplot(BPRSL, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(linetype = treatment)) +scale_linetype_manual(values =rep(1:10, times =4)) +
+  scale_y_continuous(name = "bprs", limits = c(min(BPRSL$bprs), max(BPRSL$bprs))) +facet_grid(.~treatment, labeller = label_both) +
+  theme(legend.position = "none")
+``` 
+In the second plotI tried to create a vector of fitted values. Then i tried to add the vector as a column in BPRSL and then i tried to create a new plot. This did, however, not work at all, and Idon't see what I did wrong.. Anyhow, without a proper graph it's hard to do a good interpretation on it.
